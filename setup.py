@@ -10,11 +10,7 @@ setup(name='cvdm',
       packages=['cvdm'],
       install_requires=[
                        'numpy',
-                       'pandas',
                        'pytest',
-                       'scipy',
-                       'sklearn',
-                       'tqdm'
                      ],
       classifiers=[
         "Programming Language :: Python :: 3",
