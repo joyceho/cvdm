@@ -45,7 +45,7 @@ class Advance(BaseRisk):
                 "afib",
                 "hba1c",
                 "albumin_creat",
-                "nonhdl_mmol",
+                "nonhdl_mmoll",
                 "htn_treat"]
 
     def score(self, row):
@@ -57,7 +57,7 @@ class Advance(BaseRisk):
                        row["afib"],
                        row["hba1c"],
                        row["albumin_creat"],
-                       row["nonhdl_mmol"],
+                       row["nonhdl_mmoll"],
                        row["htn_treat"])
 
     def get_features(self, row):
