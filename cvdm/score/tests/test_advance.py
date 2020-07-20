@@ -18,6 +18,6 @@ def test_advance_json():
                     "afib": True,
                     "hba1c": 7,
                     "albumin_creat": 50,
-                    "nonhdl_mmol": 3.3,
+                    "nonhdl_mmoll": 3.3,
                     "htn_treat": True})
     npt.assert_almost_equal(tmp, 0.062, decimal=3)

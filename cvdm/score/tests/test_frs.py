@@ -33,7 +33,7 @@ def test_frs_primary_json():
 
 
 def test_frs_simple():
-    score = frs_simple("F", 35, 24.3, 122, False, True, False)
+    score = frs_simple(True, 35, 24.3, 122, False, True, False)
     npt.assert_almost_equal(score, 0.029352227213368165, decimal=5)
 
 

@@ -5,6 +5,7 @@ from .aric import aric, Aric
 from .chs import chs, Chs
 from .darts import darts, Darts
 from .dcs import dcs, Dcs
+from .dial import dial, Dial
 from .dmcx import dmcx, Dmcx
 from .fremantle import fremantle, Fremantle
 from .frs import frs_primary, frs_simple, FrsSimple, FrsPrimary
