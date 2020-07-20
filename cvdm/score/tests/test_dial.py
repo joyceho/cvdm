@@ -18,8 +18,8 @@ def test_dial_json():
                       "bmi": 27,
                       "cur_smoke": False,
                       "sbp": 150,
-                      "nonhdl_mmoll": 5,
-                      "hba1c_mmoll": 55,
+                      "nonhdl_mmol": 5,
+                      "hba1c_mmol": 55,
                       "egfr": 70,
                       "microalbum": False,
                       "macroalbum": False,
@@ -27,4 +27,4 @@ def test_dial_json():
                       "cvd_hist": True,
                       "insulin": False})
     npt.assert_almost_equal(tmp, 0.0248, decimal=4)
-    
+

@@ -45,7 +45,7 @@ class Advance(BaseRisk):
                 "afib",
                 "hba1c",
                 "albumin_creat",
-                "nonhdl_mmoll",
+                "nonhdl_mmol",
                 "htn_treat"]
 
     def score(self, row):
