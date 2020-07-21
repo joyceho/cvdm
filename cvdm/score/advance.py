@@ -57,7 +57,7 @@ class Advance(BaseRisk):
                        row["afib"],
                        row["hba1c"],
                        row["albumin_creat"],
-                       row["nonhdl_mmoll"],
+                       row["nonhdl_mmol"],
                        row["htn_treat"])
 
     def get_features(self, row):
