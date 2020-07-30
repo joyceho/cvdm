@@ -61,6 +61,10 @@ class FrsSimple(BaseRisk):
     features = ["female",
                 "cur_smoke",
                 "dm"]
+    feat_key = features + ["index_age",
+                           "bmi", 
+                           "sbp",
+                           "htn_treat"]
 
     def score(self, row):
         return frs_simple(row["female"],
@@ -84,6 +88,11 @@ class FrsPrimary(BaseRisk):
     features = ["female",
                 "cur_smoke",
                 "dm"]
+    feat_key = features + ["index_age",
+                           "chol_tot",
+                           "chol_hdl",
+                           "sbp",
+                           "htn_treat"]
 
     def score(self, row):
         return frs_primary(row['female'],

@@ -62,6 +62,8 @@ class Darts(BaseRisk):
                 "sbp",
                 "htn_treat",
                 "height_m"]
+    feat_key = features + ["hba1c", "5y_follow"]
+    
     
     def __init__(self, tYear=5):
         self.tYear = tYear

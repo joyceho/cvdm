@@ -110,6 +110,7 @@ class Recode(BaseRisk):
                 "chol_hdl",
                 "creat", 
                 "albumin_creat"]
+    feat_key = features
 
     def __init__(self, target="CHF"):
         self.target = target

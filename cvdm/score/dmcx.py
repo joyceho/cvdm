@@ -134,7 +134,8 @@ class Dmcx(BaseRisk):
                 "bmi",
                 "insulin",
                 "a_glucose"]
-
+    feat_key = features
+    
     def score(self, row):
         return dmcx(row["index_age"],
                     row["egfr"],

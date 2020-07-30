@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 class BaseRisk(object):
     __metaclass__ = ABCMeta
     features = None
+    feat_key = None
 
     @abstractmethod
     def score(self, row):
@@ -20,6 +21,14 @@ class BaseRisk(object):
         float: the score
         """
         pass
+
+    def get_feature_keys(self):
+        """
+        Get the keys / column names for the pandas row
+        or dictionary representation
+        """
+        return feat_key
+
 
     def get_features(self, row):
         """

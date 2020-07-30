@@ -96,6 +96,8 @@ class HkdrCHD(BaseRisk):
                 "diab_dur",
                 "cur_smoke",
                 "nonhdl_mmol"]
+    feat_key = features + ["egfr",
+                           "albumin_creat_mgmmol"]
 
     def score(self, row):
         return hkdr_chd(row["index_age"],
@@ -156,6 +158,7 @@ class HkdrHF(BaseRisk):
                 "hba1c",
                 "hb",
                 "chd"]
+    feat_key = features + ["albumin_creat_mgmmol"]
 
     def score(self, row):
         return hkdr_hf(row["female"],
@@ -189,6 +192,7 @@ class HkdrStroke(BaseRisk):
     features = ["index_age",
                 "hba1c",
                 "chd"]
+    feat_key = features + ["albumin_creat_mgmmol"]
     
     def score(self, row):
         return hkdr_stroke(row["index_age"],

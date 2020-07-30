@@ -69,6 +69,9 @@ class Fremantle(BaseRisk):
                 "cvd_hist",
                 "SEuro",
                 "Abor"]
+    feat_key = features + ["hba1c",
+                           "albumin_creat_mgmmol",
+                           "chol_hdl_mmol"]
 
     def score(self, row):
         return fremantle(row["index_age"],

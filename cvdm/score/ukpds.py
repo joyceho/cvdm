@@ -51,6 +51,7 @@ class Ukpds(BaseRisk):
                 "cur_smoke",
                 "hba1c",
                 "sbp"]
+    feat_key = features + ["tchdl"]
 
     def __init__(self, tYear=10):
         self.tYear = tYear

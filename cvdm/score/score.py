@@ -80,6 +80,7 @@ class Score(BaseRisk):
                 "cur_smoke",
                 "sbp", 
                 "chol_tot"]
+    feat_key = features
 
     def __init__(self, lowRisk=True):
         self.lowRisk = lowRisk

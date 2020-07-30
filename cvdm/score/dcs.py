@@ -102,6 +102,7 @@ class Dcs(BaseRisk):
                 "macroalbum",
                 "diab_dur",
                 "htn_treat"]
+    feat_key = features
 
     def __init__(self, target="CVD"):
         self.target = target

@@ -139,6 +139,11 @@ class Pce(BaseRisk):
                 "AC",
                 "cur_smoke",
                 "dm"]
+    feat_key = features + ["index_age",
+                           "chol_tot", 
+                           "chol_hdl", 
+                           "sbp",
+                           "htn_treat"]
 
     def __init__(self, risk = 5):
         self.risk = risk

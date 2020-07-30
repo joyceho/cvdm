@@ -113,6 +113,9 @@ class UkpdsOM2CHF(BaseRisk):
                 "pvd",
                 "amp_hist",
                 "ulcer_hist"]
+    feat_key = features + ["egfr",
+                           "chol_ldl_mmol",
+                           "albumin_urine"]
     
 
     def __init__(self, tYear=10):

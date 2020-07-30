@@ -157,7 +157,11 @@ class Dial(BaseRisk):
                 "diab_dur",
                 "cvd_hist",
                 "insulin"]
-
+    feat_key = features + ["index_age",
+                           "bmi", "sbp",
+                           "nonhdl_mmol",
+                           "hba1c_mmol",
+                           "egfr"]
 
     def score(self, row):
         return dial(row["male"],

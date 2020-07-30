@@ -47,6 +47,8 @@ class Advance(BaseRisk):
                 "albumin_creat",
                 "nonhdl_mmol",
                 "htn_treat"]
+    # set them to be the same
+    feat_key = features
 
     def score(self, row):
         return advance(row["diab_age"],

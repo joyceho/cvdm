@@ -251,6 +251,12 @@ class QDiabetes(BaseRisk):
                 "afib",
                 "cvd_hist",
                 "renal"]
+    feat_key = features + ["diab_dur",
+                           "AC", "EAsian", 
+                           "heavy_smoke", 
+                           "moderate_smoke", 
+                           "light_smoke", 
+                           "prev_smoke"]
 
     def __init__(self, tYear=5):
         self.tYear = tYear

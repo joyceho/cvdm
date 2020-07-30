@@ -66,6 +66,7 @@ class Aric(BaseRisk):
                 "sbp",
                 "htn_treat",
                 "cur_smoke"]
+    feat_key = features + ["chol_tot", "chol_hdl"]
 
     def score(self, row):
         return aric(row["index_age"],

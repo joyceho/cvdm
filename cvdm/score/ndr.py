@@ -66,19 +66,6 @@ def ndr(diabAge, diabDur, tchdl, hba1c, sbp, bmi,
     return s
 
 
-NDR_FEAT_MAP = {"smoke_status": 1,
-                "hba1c": 1,
-                "sbp": 1,
-                "history_cvd": 0,
-                "afib": 0,
-                "diab_age": 0,
-                "diab_dur": 0,
-                "bmi": 0,
-                "tchdl": 0,
-                "microalbum": 0,
-                "macroalbum": 0}
-
-
 class Ndr(BaseRisk):
     risk = None
     features = ["diab_age",
@@ -89,6 +76,10 @@ class Ndr(BaseRisk):
                 "macroalbum",
                 "afib",
                 "cvd_hist"]
+    feat_key = features + ["tchdl",
+                           "hba1c",
+                           "sbp",
+                           "bmi"]
 
 
     def __init__(self, risk = 5):
