@@ -95,7 +95,7 @@ class HkdrCHD(BaseRisk):
                 "index_age",
                 "diab_dur",
                 "cur_smoke",
-                "nonhdl_mmoll"]
+                "nonhdl_mmol"]
 
     def score(self, row):
         return hkdr_chd(row["index_age"],
@@ -104,7 +104,7 @@ class HkdrCHD(BaseRisk):
                         row["diab_dur"],
                         row["egfr"],
                         row["albumin_creat_mgmmol"],
-                        row["nonhdl_mmoll"])
+                        row["nonhdl_mmol"])
 
     def get_features(self, row):
         feat_dict = super().get_features(row)

@@ -17,7 +17,7 @@ def test_hkdr_chd_json():
                      "diab_dur": 5,
                      "egfr": 105,
                      "albumin_creat_mgmmol": 2.3,
-                     "nonhdl_mmoll": 3.87})
+                     "nonhdl_mmol": 3.87})
     npt.assert_almost_equal(tmp, 0.082, decimal=3)
 
 

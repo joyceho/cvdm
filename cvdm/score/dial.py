@@ -89,7 +89,7 @@ AGE_S0 = {
 DIAL_COEF = np.array([-2.432709,     # male
                        0.035983,     # age (if male)
                       -0.08603257,   # BMI - 30
-                       0.001155281,  # squared BMI - 30^2                       0.05667,  # hba1c
+                       0.001155281,  # squared BMI - 30^2
                       -0.6910912,    # smoking
                        0.01127745,   # age (if smoking)
                       -0.02365684,   # sbp - 140
@@ -150,11 +150,8 @@ def dial(is_male, age, bmi, cur_smoke,
 
 
 class Dial(BaseRisk):
-    features = ["index_age",
-                "male",
+    features = ["male",
                 "cur_smoke",
-                "sbp",
-                "egfr"
                 "microalbum",
                 "macroalbum",
                 "diab_dur",
@@ -179,5 +176,18 @@ class Dial(BaseRisk):
 
     def get_features(self, row):
         feat_dict = super().get_features(row)
-        feat_dict["sbp_htn"] = feat_dict["sbp"]*feat_dict["htn_treat"]
+        feat_dict["age_male"] = feat_dict["index_age"]*feat_dict["male"]
+        feat_dict["bmi_30"] = feat_dict["bmi"] - 30
+        feat_dict["bmi_2_30"] = feat_dict["bmi"]**2 - 30**2
+        feat_dict["age_smoke"] = feat_dict["index_age"]*feat_dict["cur_smoke"]
+        feat_dict["sbp_140"] = feat_dict["sbp"]-140
+        feat_dict["sbp_2_140"] = feat_dict["sbp"]**2 - 140**2
+        feat_dict["nonhdl_38"] = feat_dict["nonhdl_mmol"] - 3.8
+        feat_dict["nonhdl_2_38"] = feat_dict["nonhdl_mmol"]**2 - 3.8**2
+        feat_dict["hba1c_50"] = feat_dict["hba1c_mmol"] - 50
+        feat_dict["hba1c_2_50"] = feat_dict["hba1c_mmol"]**2 - 50**2
+        feat_dict["egfr_80"] = feat_dict["egfr"] - 80
+        feat_dict["egfr_2_80"] = feat_dict["egfr"]**2 - 80**2
+        feat_dict["age_cvd"] = feat_dict["index_age"] * feat_dict["cvd_hist"]
+        feat_dict["age_insulin"] = feat_dict["index_age"] * feat_dict["insulin"]
         return feat_dict
