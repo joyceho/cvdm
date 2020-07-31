@@ -27,7 +27,7 @@ class BaseRisk(object):
         Get the keys / column names for the pandas row
         or dictionary representation
         """
-        return feat_key
+        return self.feat_key
 
 
     def get_features(self, row):

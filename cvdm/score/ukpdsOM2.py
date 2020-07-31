@@ -178,6 +178,10 @@ class UkpdsOM2Stroke(BaseRisk):
                 "wbc",
                 "amp_hist",
                 "chd"]
+    feat_key = features + ["egfr",
+                           "chol_ldl_mmol",
+                           "albumin_urine",
+                           "sbp"]
 
     def __init__(self, tYear=10):
         self.tYear = tYear
@@ -276,6 +280,12 @@ class UkpdsOM2MI(BaseRisk):
                 "chd",
                 "chf",
                 "stroke_hist"]
+    feat_key = features + ["egfr",
+                           "chol_hdl_mmol",
+                           "chol_ldl_mmol",
+                           "albumin_urine",
+                           "sbp",
+                           "female"]
 
     def __init__(self, tYear=10):
         self.tYear = tYear
