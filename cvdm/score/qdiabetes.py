@@ -7,7 +7,8 @@ See: https://qdiabetes.org/heart-failure/src.php
 import numpy as np
 
 from cvdm.score import BaseRisk
-
+from cvdm.score import clean_age, clean_hba1c, clean_bmi, clean_diab_dur
+from cvdm.score import clean_tchdl, clean_bp
 
 FEMALE_CCF = {
     "survival": np.array([0,
@@ -194,13 +195,11 @@ def _frac_poly_male(bmi, hba1c, sbp):
     hba1cDecade = hba1c / 100
     hba1c1 = np.power(hba1cDecade, -2)
     hba1c2 = np.power(hba1cDecade, -2)*np.log(hba1cDecade)
-    sbpDecade = sbp/100
+    sbpDecade = sbp / 100
     sbp1 = np.log(sbpDecade)
     sbp2 = np.power(sbpDecade, 0.5)
     return bmi1, bmi2, hba1c1, hba1c2, sbp1, sbp2
 
-
-np.seterr(over="raise")
 
 def _survival(age, bmi, diabDur, ac, easian,
               hba1c, tchdl, sbp, heavy_smoke,
@@ -224,18 +223,25 @@ def _survival(age, bmi, diabDur, ac, easian,
     return (1-s)
 
 
-def qdiabetes(age, isMale, bmi, diabDur, ac, easian,
+def qdiabetes(age, male, bmi, diab_dur, ac, easian,
               hba1c, tchdl, sbp, heavy_smoke,
               moderate_smoke, light_smoke, prev_smoke,
               afib, cvd, renal,
               tYear=5, dmt1=False):
     genderInfo = FEMALE_CCF
     fractalFunc = _frac_poly_female
-    if isMale:
+    if male:
         genderInfo = MALE_CCF
         fractalFunc = _frac_poly_male
-    return _survival(age, bmi, diabDur, ac, easian, hba1c,
-                     tchdl, sbp, heavy_smoke, moderate_smoke,
+    return _survival(clean_age(age),
+                     clean_bmi(bmi),
+                     clean_diab_dur(diab_dur, 0),
+                     ac,
+                     easian,
+                     clean_hba1c(hba1c, meas="mmol"),
+                     clean_tchdl(tchdl),
+                     clean_bp(sbp),
+                     heavy_smoke, moderate_smoke,
                      light_smoke, prev_smoke, afib, cvd,
                      renal, dmt1, genderInfo, tYear, fractalFunc)
 

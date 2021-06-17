@@ -7,6 +7,7 @@ https://github.com/fonnesbeck/framingham_risk
 import numpy as np
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_bp, clean_bmi, clean_tot_chol, clean_hdl, clean_age
 
 
 NONLAB_WOMEN  = {
@@ -114,14 +115,14 @@ class FrsPrimary(BaseRisk):
         return feat_dict
  
 
-def frs_simple(isFemale, age, bmi, sbp, htn, smk, diab):
+def frs_simple(female, age, bmi, sbp, htn, smk, diab):
     """
     10-year risk calculated using the Simple Non-Laboratory 
     Framingham Risk Score (FRS) Calculation.
     
     Parameters
     ----------
-    isFemale : boolean
+    female : boolean
     age : numeric
             Age of subject
     bmi : numeric
@@ -135,31 +136,31 @@ def frs_simple(isFemale, age, bmi, sbp, htn, smk, diab):
     diab : bool or int
             Subject has diabetes (True or False)
     """
-    xFeat = np.array([np.log(age),
-                      np.log(bmi),
-                      np.log(sbp)*(1-htn),
-                      np.log(sbp)*htn,
+    xFeat = np.array([np.log(clean_age(age)),
+                      np.log(clean_bmi(bmi)),
+                      np.log(clean_bp(sbp))*(1-htn),
+                      np.log(clean_bp(sbp))*htn,
                       smk,
                       diab])
     genderInfo = NONLAB_MEN
-    if isFemale: 
+    if female: 
         genderInfo = NONLAB_WOMEN
     return cox_surv(xFeat, genderInfo["coef"],
                     genderInfo["s0"], genderInfo["const"])
 
 
-def frs_primary(isFemale, age, totChol, hdl, sbp, htn, smk, diab):
+def frs_primary(female, age, tot_chol, hdl, sbp, htn, smk, diab):
     """
     """
-    xFeat = np.array([np.log(age),
-                      np.log(totChol),
-                      np.log(hdl),
-                      np.log(sbp)*(1-htn),
-                      np.log(sbp)*htn,
+    xFeat = np.array([np.log(clean_age(age)),
+                      np.log(clean_tot_chol(tot_chol)),
+                      np.log(clean_hdl(hdl)),
+                      np.log(clean_bp(sbp))*(1-htn),
+                      np.log(clean_bp(sbp))*htn,
                       smk,
                       diab])
     genderInfo = LAB_MEN
-    if isFemale: 
+    if female: 
         genderInfo = LAB_WOMEN
     return cox_surv(xFeat, genderInfo["coef"],
                     genderInfo["s0"], genderInfo["const"])

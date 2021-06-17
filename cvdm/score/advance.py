@@ -9,6 +9,7 @@ European Journal of Cardiovascular Prevention & Rehabilitation 18.3 (2011): 393-
 import numpy as np
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_diab_dur, clean_pp, clean_hba1c, clean_acr, clean_nonhdl
 
 # coefficients for survival
 BETA = np.array([ 0.06187, # age at diagnosis of diabetes
@@ -26,12 +27,20 @@ S_0 = 0.951044
 CONST = 6.52910152
 
 
-def advance(diabAge, isFemale, diabDur,
+def advance(diab_age, female, diab_dur,
             pp, retin, afib,
-            hba1c, acr, nonhdl, htn):
-    xFeat = np.array([diabAge, isFemale, diabDur,
-                      pp, retin, afib, hba1c,
-                      np.log(acr), nonhdl, htn])
+            hba1c, acr, non_hdl, htn_treat):
+    # add ability to ensure specific values are not negative
+    xFeat = np.array([diab_age,
+                      female,
+                      clean_diab_dur(diab_dur),
+                      clean_pp(pp),
+                      retin,
+                      afib,
+                      clean_hba1c(hba1c),
+                      np.log(clean_acr(acr)),
+                      clean_nonhdl(non_hdl),
+                      htn_treat])
     s = cox_surv(xFeat, BETA, S_0, CONST)
     return s
 

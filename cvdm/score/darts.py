@@ -10,6 +10,7 @@ Diabetes Care. 2006;29:1231-36.
 import numpy as np
 
 from cvdm.score import weibull_atf_surv, BaseRisk
+from cvdm.score import clean_diab_dur, clean_tot_chol, clean_hba1c, clean_bp, clean_height
 
 
 # coefficients for survival
@@ -30,23 +31,23 @@ INTERCEPT = 11.262
 SIGMA = 0.587
 
 
-def darts(diabAge, diabDur, cholTot, prevSmoke,
-          curSmoke, isMale, hba1c, follow5, sbp,
+def darts(diab_age, diab_dur, chol_tot, prev_smoker,
+          cur_smoker, male, hba1c, follow5, sbp,
           htn, height, t):
-    if diabDur < 1:
-        diabDur = 1 # fix it so that log 1 = 0
-    xFeat = np.array([np.log(diabDur),
-                     diabAge,
-                     cholTot,
-                     prevSmoke,
-                     curSmoke,
-                     isMale,
-                     np.log(hba1c),
-                     np.log(hba1c)*follow5,
-                     sbp,
-                     htn,
-                     sbp*htn,
-                     height])
+    hba1c = clean_hba1c(hba1c)
+    sbp = clean_bp(sbp)
+    xFeat = np.array([np.log(clean_diab_dur(diab_dur)),
+                      diab_age,
+                      clean_tot_chol(chol_tot),
+                      prev_smoker,
+                      cur_smoker,
+                      male,
+                      np.log(hba1c),
+                      np.log(hba1c)*follow5,
+                      sbp,
+                      htn,
+                      sbp*htn,
+                      clean_height(height)])
     s = weibull_atf_surv(xFeat, BETA, INTERCEPT, SIGMA, t)
     return s
 

@@ -14,6 +14,9 @@ https://u-prevent.com/calculators/results/dialModel
 import numpy as np
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_age, clean_bmi, clean_bp, clean_nonhdl
+from cvdm.score import clean_hba1c, clean_egfr, clean_diab_dur
+
 
 # age-specific baseline survivals
 AGE_S0 = {
@@ -118,9 +121,13 @@ def dial(is_male, age, bmi, cur_smoke,
          diab_dur, cvd_hist, insulin,
          hz_treat=0, high_risk_county=False):
     # fix the age to be within 18-94
-    age = max(int(round(age)), 30)
-    age = min(age, 94)
-    diab_dur = int(round(diab_dur))
+    age = min(clean_age(age), 94)
+    diab_dur = int(round(clean_diab_dur(diab_dur)))
+    bmi = clean_bmi(bmi)
+    sbp = clean_bp(sbp)
+    non_hdl = clean_nonhdl(non_hdl, meas="mmol")
+    egfr = clean_egfr(egfr)
+    hba1c = clean_hba1c(hba1c, meas="mmol")
     xFeat = np.array([is_male,
                       age*is_male,
                       bmi-30,
@@ -180,18 +187,18 @@ class Dial(BaseRisk):
 
     def get_features(self, row):
         feat_dict = super().get_features(row)
-        feat_dict["age_male"] = feat_dict["index_age"]*feat_dict["male"]
-        feat_dict["bmi_30"] = feat_dict["bmi"] - 30
-        feat_dict["bmi_2_30"] = feat_dict["bmi"]**2 - 30**2
-        feat_dict["age_smoke"] = feat_dict["index_age"]*feat_dict["cur_smoke"]
-        feat_dict["sbp_140"] = feat_dict["sbp"]-140
-        feat_dict["sbp_2_140"] = feat_dict["sbp"]**2 - 140**2
-        feat_dict["nonhdl_38"] = feat_dict["nonhdl_mmol"] - 3.8
-        feat_dict["nonhdl_2_38"] = feat_dict["nonhdl_mmol"]**2 - 3.8**2
-        feat_dict["hba1c_50"] = feat_dict["hba1c_mmol"] - 50
-        feat_dict["hba1c_2_50"] = feat_dict["hba1c_mmol"]**2 - 50**2
-        feat_dict["egfr_80"] = feat_dict["egfr"] - 80
-        feat_dict["egfr_2_80"] = feat_dict["egfr"]**2 - 80**2
-        feat_dict["age_cvd"] = feat_dict["index_age"] * feat_dict["cvd_hist"]
-        feat_dict["age_insulin"] = feat_dict["index_age"] * feat_dict["insulin"]
+        feat_dict["age_male"] = row["index_age"]*row["male"]
+        feat_dict["bmi_30"] = row["bmi"] - 30
+        feat_dict["bmi_2_30"] = row["bmi"]**2 - 30**2
+        feat_dict["age_smoke"] = row["index_age"]*row["cur_smoke"]
+        feat_dict["sbp_140"] = row["sbp"]-140
+        feat_dict["sbp_2_140"] = row["sbp"]**2 - 140**2
+        feat_dict["nonhdl_38"] = row["nonhdl_mmol"] - 3.8
+        feat_dict["nonhdl_2_38"] = row["nonhdl_mmol"]**2 - 3.8**2
+        feat_dict["hba1c_50"] = row["hba1c_mmol"] - 50
+        feat_dict["hba1c_2_50"] = row["hba1c_mmol"]**2 - 50**2
+        feat_dict["egfr_80"] = row["egfr"] - 80
+        feat_dict["egfr_2_80"] = row["egfr"]**2 - 80**2
+        feat_dict["age_cvd"] = row["index_age"] * row["cvd_hist"]
+        feat_dict["age_insulin"] = row["index_age"] * row["insulin"]
         return feat_dict

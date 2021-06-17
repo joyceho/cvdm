@@ -6,6 +6,7 @@ https://clincalc.com/cardiology/ascvd/pooledcohort.aspx
 import numpy as np
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_age, clean_tot_chol, clean_hdl, clean_bp
 
 
 WHITE_FEMALE  = {
@@ -90,27 +91,8 @@ BLACK_MALE  = {
 }
 
 
-def get_pce_feat(age, totChol, hdlChol, sbp, isSmoker, isHtn, isDiab):
-    """
-    Calculate the feature for Pooled Cohort Equation
-    """
-    return np.array([np.log(age),
-                     np.log(age)**2,
-                     np.log(totChol),
-                     np.log(totChol)*np.log(age),
-                     np.log(hdlChol),
-                     np.log(hdlChol)*np.log(age),
-                     np.log(sbp)*(1-isHtn),
-                     np.log(age)*np.log(sbp)*(1-isHtn),
-                     np.log(sbp)*isHtn,
-                     np.log(age)*np.log(sbp)*isHtn,
-                     isSmoker,
-                     isSmoker*np.log(age), 
-                     isDiab])
-
-
-def pce(isFemale, isAC, age, totChol, hdlChol,
-        sbp, isSmoker, isHtn, isDiab, risk=5):
+def pce(female, ac, age, tot_chol, hdl,
+        sbp, smoker, htn, diab, risk=5):
     if risk not in [5, 10]:
         raise NotImplementedError("Does not support risk that is not 5 or 10")
     baseSurv = "s10"
@@ -118,15 +100,29 @@ def pce(isFemale, isAC, age, totChol, hdlChol,
         baseSurv = "s5"
     # figure out what the betas are
     cohortInfo = WHITE_MALE
-    if isFemale and isAC:
+    if female and ac:
         cohortInfo = BLACK_FEMALE
-    elif isFemale:
+    elif female:
         cohortInfo = WHITE_FEMALE
-    elif isAC:
+    elif ac:
         cohortInfo = BLACK_MALE
-    xFeat = get_pce_feat(age, totChol, hdlChol,
-                         sbp, isSmoker, isHtn,
-                         isDiab)
+    age = clean_age(age)
+    tot_chol = clean_tot_chol(tot_chol)
+    hdl = clean_hdl(hdl)
+    sbp = clean_bp(sbp)
+    xFeat = np.array([np.log(age),
+                      np.log(age)**2,
+                      np.log(tot_chol),
+                      np.log(tot_chol)*np.log(age),
+                      np.log(hdl),
+                      np.log(hdl)*np.log(age),
+                      np.log(sbp)*(1-htn),
+                      np.log(age)*np.log(sbp)*(1-htn),
+                      np.log(sbp)*htn,
+                      np.log(age)*np.log(sbp)*htn,
+                      smoker,
+                      smoker*np.log(age), 
+                      diab])
     s = cox_surv(xFeat, cohortInfo["coef"],
                  cohortInfo[baseSurv],
                  cohortInfo["const"])

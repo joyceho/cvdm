@@ -7,6 +7,8 @@ import numpy as np
 import tqdm
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_age, clean_bp, clean_hba1c
+from cvdm.score import clean_tot_chol, clean_hdl, clean_acr
 
 
 ## Coefficients for CHF Recode
@@ -73,9 +75,9 @@ STROKE_INFO ={
 }
 
 
-def recode(age, isFemale, ethnicity, smoking, sbp, 
+def recode(age, female, ethnicity, smoking, sbp, 
            cvdHist, bpld, statin, anticoag,
-           hba1c, tchol, hdl, creat, albumcreat,
+           hba1c, tchol, hdl, creat, acr,
            target="CHF"):
     coefInfo = CHD_INFO
     if target == "MI":
@@ -85,11 +87,18 @@ def recode(age, isFemale, ethnicity, smoking, sbp,
     """
     Calculate the survival value
     """
-    xFeat = np.array([age, isFemale, ethnicity,
-                  smoking, sbp, cvdHist,
-                  bpld, statin, anticoag,
-                  hba1c, tchol, hdl, creat,
-                  albumcreat])
+    xFeat = np.array([clean_age(age),
+                      female,
+                      ethnicity,
+                      smoking,
+                      clean_bp(sbp),
+                      cvdHist,
+                      bpld, statin, anticoag,
+                      clean_hba1c(hba1c),
+                      clean_tot_chol(tchol),
+                      clean_hdl(hdl),
+                      creat,
+                      clean_acr(acr)])
     return cox_surv(xFeat, coefInfo["coef"],
                     coefInfo["s0"], coefInfo["const"])
 

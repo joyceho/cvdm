@@ -10,6 +10,8 @@ Am J Cardiol. 2008;101:596-601.
 import numpy as np
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_age, clean_diab_dur, clean_egfr, clean_acr
+from cvdm.score import clean_bmi, clean_hba1c, clean_nonhdl, clean_hb
 
 
 # coefficients for survival
@@ -53,8 +55,8 @@ HKDR_STROKE = {
 }
 
 
-def hkdr_chd(age, isFemale, curSmoke, diabDur,
-             egfr, acr, nonHdlChol):
+def hkdr_chd(age, female, cur_smoker, diab_dur,
+             egfr, acr, nonhdl_mmol):
     """
     Calculate the risk for coronary heart disease
     using the coefficients from the HKDR CHD Cohort
@@ -76,13 +78,13 @@ def hkdr_chd(age, isFemale, curSmoke, diabDur,
     nonHDL : numeric
             Non-HDL cholesterol (mmol/L)
     """
-    xFeat = np.array([age,
-                      isFemale,
-                      curSmoke,
-                      diabDur,
-                      np.log10(egfr),
-                      np.log10(1+acr),
-                      nonHdlChol])
+    xFeat = np.array([clean_age(age),
+                      female,
+                      cur_smoker,
+                      clean_diab_dur(diab_dur),
+                      np.log10(clean_egfr(egfr)),
+                      np.log10(1+clean_acr(acr)),
+                      clean_nonhdl(nonhdl_mmol, meas="mmol")])
     return cox_surv(xFeat,
                     HKDR_CHD["coef"],
                     HKDR_CHD["sm"],
@@ -115,7 +117,7 @@ class HkdrCHD(BaseRisk):
         return feat_dict
 
 
-def hkdr_hf(isFemale, age, bmi, hba1c, acr, hb, chdHist):
+def hkdr_hf(female, age, bmi, hba1c, acr, hb, chdHist):
     """
     Calculate the risk for heart failure
     using the coefficients from the HKDR Cohort
@@ -136,14 +138,14 @@ def hkdr_hf(isFemale, age, bmi, hba1c, acr, hb, chdHist):
             Subject had CHD (true or False)
     """
     baseSurv = HKDR_HF["male_sm"]
-    if isFemale:
+    if female:
         baseSurv = HKDR_HF["female_sm"]
-    xFeat = np.array([age,
-                     bmi,
-                     hba1c,
-                     np.log10(1+acr),
-                     hb,
-                     chdHist])
+    xFeat = np.array([clean_age(age),
+                      clean_bmi(bmi),
+                      clean_hba1c(hba1c),
+                      np.log10(1+clean_acr(acr)),
+                      clean_hb(hb),
+                      chdHist])
     return cox_surv(xFeat,
                     HKDR_HF["coef"],
                     baseSurv,
@@ -178,9 +180,9 @@ class HkdrHF(BaseRisk):
 
 
 def hkdr_stroke(age, hba1c, acr, chd):
-    xFeat = np.array([age,
-                      hba1c,
-                      np.log10(acr),
+    xFeat = np.array([clean_age(age),
+                      clean_hba1c(hba1c),
+                      np.log10(clean_acr(acr)),
                       chd])
     return cox_surv(xFeat,
                     HKDR_STROKE["coef"],

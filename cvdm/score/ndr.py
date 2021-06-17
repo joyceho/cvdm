@@ -11,6 +11,7 @@ Diabetes research and clinical practice 93.2 (2011): 276-284.
 import numpy as np
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_diab_dur, clean_hba1c, clean_bp, clean_bmi, clean_tchdl
 
 
 # coefficients for survival
@@ -31,27 +32,7 @@ S0_5 = 0.90237
 S0_4 = 0.92347
 
 
-def get_ndr_feat(diabAge, diabDur, tchdl, hba1c, sbp, bmi,
-                 male, smoker, microalbum, macroalbum,
-                 afib, cvd):
-    """
-    Calculate the survival value
-    """
-    return np.array([diabAge-53.858,
-                     diabDur-7.7360,
-                     np.log(tchdl)-1.3948,
-                     np.log(hba1c)-1.9736,
-                     np.log(sbp)-4.9441,
-                     np.log(bmi)-3.3718,
-                     male-0.6005,
-                     smoker-0.1778,
-                     microalbum-0.1604,
-                     macroalbum-0.0638,
-                     afib-0.0319,
-                     cvd-0.1525])
-
-
-def ndr(diabAge, diabDur, tchdl, hba1c, sbp, bmi,
+def ndr(diab_age, diab_dur, tchdl, hba1c, sbp, bmi,
         male, smoker, microalbum, macroalbum,
         afib, cvd, risk=5):
     if risk not in [4, 5]:
@@ -59,9 +40,18 @@ def ndr(diabAge, diabDur, tchdl, hba1c, sbp, bmi,
     baseSurv = S0_4
     if risk == 5:
         baseSurv = S0_5
-    xFeat = get_ndr_feat(diabAge, diabDur, tchdl, hba1c,
-                         sbp, bmi, male, smoker, microalbum,
-                         macroalbum, afib, cvd)
+    xFeat = np.array([diab_age-53.858,
+                      clean_diab_dur(diab_dur)-7.7360,
+                      np.log(clean_tchdl(tchdl))-1.3948,
+                      np.log(clean_hba1c(hba1c))-1.9736,
+                      np.log(clean_bp(sbp))-4.9441,
+                      np.log(clean_bmi(bmi))-3.3718,
+                      male-0.6005,
+                      smoker-0.1778,
+                      microalbum-0.1604,
+                      macroalbum-0.0638,
+                      afib-0.0319,
+                      cvd-0.1525])
     s = cox_surv(xFeat, BETA, baseSurv)
     return s
 

@@ -7,18 +7,18 @@ disease in Europe: the SCORE project. European Heart Journal, 24(11), 987–1003
 """
 import numpy as np
 
-from cvdm.score import BaseRisk
+from cvdm.score import BaseRisk, clean_chol, clean_bp
 
 
 # coefficients for survival
 LOW_RISK_MEN = {'CHD': {"alpha": -22.1, "p": 4.71},
                 'Non-CHD': {"alpha": -26.7, "p": 5.64}}
 LOW_RISK_WOMEN = {'CHD': {"alpha": -29.8, "p": 6.36},
-                'Non-CHD': {"alpha": -31.0, "p": 6.62}}
+                  'Non-CHD': {"alpha": -31.0, "p": 6.62}}
 HIGH_RISK_MEN = {'CHD': {"alpha": -21.0, "p": 4.62},
-                'Non-CHD': {"alpha": -25.7, "p": 5.47}}
+                 'Non-CHD': {"alpha": -25.7, "p": 5.47}}
 HIGH_RISK_WOMEN = {'CHD': {"alpha": -28.7, "p": 6.23},
-                'Non-CHD': {"alpha": -30.0, "p": 6.42}}
+                   'Non-CHD': {"alpha": -30.0, "p": 6.42}}
 
 # coefficients for measurements
 COEFF = {'CHD': [0.71, 0.24, 0.018],
@@ -44,8 +44,9 @@ def _baseline_s0(age, coef):
 
 
 def _w(chol, sbp, smoking, coef):
-    # make sure to convert cholesterol from mg/dl to mmol
-    X = np.array([bool(smoking), (chol / 38.67-6), sbp-120])
+    X = np.array([bool(smoking),
+                  chol-6,
+                  sbp-120])
     return X.dot(coef)
 
 
@@ -61,9 +62,7 @@ def _risk_10(survival):
 def _calculate_score(coef_gender, age, chol, sbp, smoking):
     # sum up the two risks
     cvdRisk = 0
-    # make sure age is above some value
-    if (age < 20):
-        age = 20
+
     # calculate the two cases, CHD vs non-CHD
     for k, v in coef_gender.items():
         s0 = _baseline_s0(age, v)
@@ -74,35 +73,39 @@ def _calculate_score(coef_gender, age, chol, sbp, smoking):
 
 
 class Score(BaseRisk):
-    lowRisk = None
+    low_risk = None
     features = ["index_age",
                 "female",
                 "cur_smoke",
                 "sbp", 
-                "chol_tot"]
+                "chol_tot_mmol"]
     feat_key = features
 
-    def __init__(self, lowRisk=True):
-        self.lowRisk = lowRisk
+    def __init__(self, low_risk=True):
+        self.low_risk = low_risk
 
     def score(self, row):
         return score(row["female"],
                      row["index_age"],
-                     row["chol_tot"],
+                     row["chol_tot_mmol"],
                      row["sbp"],
                      row["cur_smoke"],
-                     self.lowRisk)
+                     self.low_risk)
 
 
-def score(isFemale, age, chol, sbp, smoking, lowRisk):
+def score(female, age, chol_mmol, sbp, smoking, low_risk):
     sc = None
     beta = HIGH_RISK_MEN
-    if isFemale and lowRisk:
+    if female and low_risk:
         beta = LOW_RISK_WOMEN
-    elif isFemale:
+    elif female:
         beta = HIGH_RISK_WOMEN
-    elif lowRisk:
+    elif low_risk:
         beta = LOW_RISK_MEN
-    sc = _calculate_score(beta, age, chol, sbp, smoking)
+    sc = _calculate_score(beta,
+                          max(20, age),
+                          clean_chol(chol_mmol),
+                          clean_bp(sbp),
+                          smoking)
     return max(0, min(sc, 1))
 

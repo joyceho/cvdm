@@ -10,6 +10,7 @@ Intern Med J. 2010;40:286-92
 import numpy as np
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_age, clean_hba1c, clean_acr, clean_hdl
 
 
 # coefficients for survival
@@ -26,8 +27,8 @@ FREMANTLE_COEF = np.array([ 0.080,  # age in years
         ])
 
 
-def fremantle(age, isMale, cvd, hba1c, acr,
-              hdl, seurope, aboriginal):
+def fremantle(age, male, cvd, hba1c, acr,
+              hdl_mmol, seurope, aboriginal):
     """
     Calculate the risk for cardiovascular disease
     using the coefficients from the Fremantle Cohort
@@ -51,14 +52,14 @@ def fremantle(age, isMale, cvd, hba1c, acr,
     aboriginal : bool or int
             Subject is Indigenous Australian (True or False)
     """
-    xFeat = np.array([age,
-                     isMale,
-                     cvd,
-                     np.log(hba1c),
-                     np.log(acr),
-                     np.log(hdl),
-                     seurope,
-                     aboriginal])
+    xFeat = np.array([clean_age(age),
+                      male,
+                      cvd,
+                      np.log(clean_hba1c(hba1c)),
+                      np.log(clean_acr(acr)),
+                      np.log(clean_hdl(hdl_mmol, meas="mmol")),
+                      seurope,
+                      aboriginal])
     return cox_surv(xFeat, FREMANTLE_COEF,
                     FREMANTLE_SM, FREMANTLE_CONST)
 

@@ -7,6 +7,7 @@ See: https://aricnews.net/riskcalc/html/RC1.html
 import numpy as np
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_age, clean_tot_chol, clean_hdl, clean_bp
 
 
 # coefficients for survival
@@ -43,17 +44,20 @@ MALE_INFO = {
 }
 
 
-def aric(age, isMale, isCauc, tc, hdl, sbp, htn, smoke):
+def aric(age, male, cauc, tc, hdl, sbp, htn, smoke):
     # set the coeff based on male or female
     genderInfo = FEMALE_INFO
-    if isMale:
+    if male:
         genderInfo = MALE_INFO
-    xFeat = np.array([age, age**2, isCauc,
-                     tc >= 200 and tc <= 279,
-                     tc >= 280,
-                     hdl < 45,
-                     hdl >= 45 and hdl <= 49,
-                     sbp, htn, smoke])
+    age = clean_age(age)
+    tc = clean_tot_chol(tc)
+    hdl = clean_hdl(hdl)
+    xFeat = np.array([age, age**2, cauc,
+                      tc >= 200 and tc <= 279,
+                      tc >= 280,
+                      hdl < 45,
+                      hdl >= 45 and hdl <= 49,
+                      clean_bp(sbp), htn, smoke])
     return cox_surv(xFeat, genderInfo["coef"],
                     genderInfo["sm"],
                     genderInfo["xBetaMed"])

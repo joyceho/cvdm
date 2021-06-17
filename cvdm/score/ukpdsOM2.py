@@ -11,6 +11,7 @@ Diabetologia 56.9 (2013): 1925-1933.
 import numpy as np
 
 from cvdm.score import weibull_surv, BaseRisk
+from cvdm.score import clean_bmi, clean_egfr, clean_ldl, clean_hba1c, clean_bp
 
 
 CHF_PARAMS = {"rho": 1.514,
@@ -89,11 +90,12 @@ def ukpdsom2_chf(diabDur, diabAge, afib, bmi, egfr, ldl,
     """
     Calculate the number of years to forecast the risk.
     """
+    egfr = clean_egfr(egfr)
     xFeat = np.array([diabAge,
                       afib,
-                      bmi,
+                      clean_bmi(bmi),
                       egfr/10 if egfr <60 else 0,
-                      ldl*10,
+                      clean_ldl(ldl)*10,
                       mmalb >= 50,
                       pvd,
                       ampHist,
@@ -153,10 +155,10 @@ def ukpdsom2_stroke(diab_dur, diab_age, female, afib,
                       female,
                       afib,
                       egfr/10 if egfr <60 else 0,
-                      hba1c,
+                      clean_hba1c(hba1c),
                       ldl*10,
                       mmalb >= 50,
-                      sbp/10,
+                      clean_bp(sbp)/10,
                       cur_smoke,
                       wbc,
                       amp_hist,
@@ -220,15 +222,16 @@ def ukpdsom2_mi_male(ac, diab_dur, diab_age, easian,
     """
     Calculate the number of years to forecast the risk.
     """
+    
     xFeat = np.array([ac,
                       diab_age,
                       easian,
-                      hba1c,
-                      hdl*10,
-                      ldl*10,
+                      clean_hba1c(hba1c),
+                      clean_hdl(hdl)*10,
+                      clean_ldl(ldl)*10,
                       mmalb >= 50,
                       pvd,
-                      sbp/10,
+                      clean_bp(sbp)/10,
                       cur_smoke,
                       wbc,
                       amp_hist,
@@ -248,14 +251,16 @@ def ukpdsom2_mi_female(ac, diab_dur, diab_age, egfr,
     """
     Calculate the number of years to forecast the risk.
     """
+    ldl = clean_ldl(ldl)
+    egfr = clean_egfr(egfr)
     xFeat = np.array([ac,
                       diab_age,
                       egfr/10 if egfr <60 else 0,
-                      hba1c,
+                      clean_hba1c(hba1c),
                       ldl*10 if ldl > 35 else 0,
                       mmalb >= 50,
                       pvd,
-                      sbp/10,
+                      clean_bp(sbp)/10,
                       cur_smoke,
                       wbc,
                       chf_hist,

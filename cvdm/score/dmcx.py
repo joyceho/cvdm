@@ -12,6 +12,8 @@ https://www.fmpc.hku.hk/resources/DMCx_RiskEngine.php
 import numpy as np
 
 from cvdm.score import cox_surv, BaseRisk
+from cvdm.score import clean_age, clean_egfr, clean_acr, clean_diab_dur
+from cvdm.score import clean_bp, clean_hba1c, clean_bmi, clean_tchdl
 
 
 # coefficients for survival
@@ -72,34 +74,8 @@ FEMALE_DCMX = {
 }
 
 
-def get_dmcx_feat(age, egfr, tchdl, acr, isSmoker, diabDur,
-                  sbp, dbp, hba1c, htnMed, bmi, insulin, aGlucose):
-    return np.array([age,
-                     egfr >= 60 and egfr < 90,
-                     egfr >= 30 and egfr < 60,
-                     egfr < 30,
-                     tchdl,
-                     np.log(acr + 1),
-                     isSmoker,
-                     diabDur,
-                     sbp,
-                     hba1c,
-                     htnMed,
-                     dbp,
-                     bmi,
-                     insulin,
-                     dbp**2,
-                     bmi**2,
-                     sbp**2,
-                     hba1c**2,
-                     age * tchdl,
-                     age * hba1c,
-                     age * isSmoker,
-                     aGlucose])
-
-
-def dmcx(age, egfr, tchdl, acr, isSmoker, diabDur, isFemale, 
-         sbp, dbp, hba1c, htnMed, bmi, insulin, aGlucose):
+def dmcx(age, egfr, tchdl, acr, smoker, diab_dur, female, 
+         sbp, dbp, hba1c, htn_med, bmi, insulin, aGlucose):
     """
     Calculate the risk for cardiovascular disease
     using the coefficients from the DMCX Cohort
@@ -109,10 +85,39 @@ def dmcx(age, egfr, tchdl, acr, isSmoker, diabDur, isFemale,
     age : numeric
             Age of subject
     """
-    xFeat = get_dmcx_feat(age, egfr, tchdl, acr, isSmoker, diabDur,
-                          sbp, dbp, hba1c, htnMed, bmi, insulin, aGlucose)
+    # do some preprocessing
+    age = clean_age(age)
+    egfr = clean_egfr(egfr)
+    sbp = clean_bp(sbp)
+    dbp = clean_bp(dbp)
+    bmi = clean_bmi(bmi)
+    hba1c = clean_hba1c(hba1c)
+    tchdl = clean_tchdl(tchdl)
+    
+    xFeat = np.array([age,
+                      egfr >= 60 and egfr < 90,
+                      egfr >= 30 and egfr < 60,
+                      egfr < 30,
+                      tchdl,
+                      np.log(clean_acr(acr) + 1),
+                      smoker,
+                      clean_diab_dur(diab_dur),
+                      sbp,
+                      hba1c,
+                      htn_med,
+                      dbp,
+                      bmi,
+                      insulin,
+                      dbp**2,
+                      bmi**2,
+                      sbp**2,
+                      hba1c**2,
+                      age * tchdl,
+                      age * hba1c,
+                      age * smoker,
+                      aGlucose])
     coefInfo = MALE_DCMX
-    if isFemale:
+    if female:
         coefInfo = FEMALE_DCMX
     return cox_surv(xFeat, coefInfo["coef"],
                     coefInfo["sm"], coefInfo["const"])

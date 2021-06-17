@@ -7,6 +7,7 @@ See:
 import numpy as np
 
 from cvdm.score import BaseRisk
+from cvdm.score import clean_age, clean_hba1c, clean_bp, clean_tchdl
 
 
 # coefficients for survival
@@ -22,24 +23,20 @@ Q_0 = 0.0112 # intercept
 D = 1.078    # risk ratio for each year increase in duration of diagnosed diabetes
 
 
-def ukpds(ageDiab, age, isFemale, ac, smoking, hba1c, sbp, tchdl, tYear=10):
+def ukpds(ageDiab, age, female, ac, smoking, hba1c, sbp, tchdl, tYear=10):
     """
     Calculate the number of years to forecast the risk.
     """
-    xFeat = get_ukpds_feat(age, isFemale, ac, smoking, hba1c, sbp, tchdl)
+    xFeat = np.array([clean_age(age)-55,
+                      female,
+                      ac,
+                      bool(smoking),
+                      clean_hba1c(hba1c)-6.72,
+                      (clean_bp(sbp) - 135.7)/10,
+                      np.log(clean_tchdl(tchdl))-1.59])
     q = Q_0 * np.prod(np.power(BETA, xFeat))
     uscore = 1 - np.exp(-q * D**(age-ageDiab)* (1-D**tYear)/ (1 - D))
     return max(uscore, 0.0)
-
-
-def get_ukpds_feat(age, isFemale, ac, smoking, hba1c, sbp, tchdl):
-    return np.array([age-55,
-                     isFemale,
-                     ac,
-                     bool(smoking),
-                     hba1c-6.72,
-                     (sbp - 135.7)/10,
-                     np.log(tchdl)-1.59])
 
 
 class Ukpds(BaseRisk):
