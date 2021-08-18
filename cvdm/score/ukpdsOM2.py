@@ -11,7 +11,7 @@ Diabetologia 56.9 (2013): 1925-1933.
 import numpy as np
 
 from cvdm.score import weibull_surv, BaseRisk
-from cvdm.score import clean_bmi, clean_egfr, clean_ldl, clean_hba1c, clean_bp
+from cvdm.score import clean_bmi, clean_egfr, clean_hdl, clean_ldl, clean_hba1c, clean_bp
 
 
 CHF_PARAMS = {"rho": 1.514,

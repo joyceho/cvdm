@@ -39,11 +39,11 @@ def clean_nonhdl(nonhdl, meas="mgdl"):
 
 
 def clean_chol(chol, meas="mgdl"):
-    return max(0, chol)
+    return max(1, chol)
 
 
 def clean_ldl(ldl, meas="mgdl"):
-    return max(0, ldl)
+    return max(1, ldl)
 
 
 def clean_hdl(hdl, meas="mgdl"):
@@ -55,7 +55,7 @@ def clean_hdl(hdl, meas="mgdl"):
 
 
 def clean_tot_chol(chol_tot, meas="mgdl"):
-    return max(0, chol_tot)
+    return max(1, chol_tot)
 
 
 def clean_tchdl(tchdl):

@@ -120,8 +120,8 @@ def dial(is_male, age, bmi, cur_smoke,
          microalbumin, macroalbumin,
          diab_dur, cvd_hist, insulin,
          hz_treat=0, high_risk_county=False):
-    # fix the age to be within 18-94
-    age = min(clean_age(age), 94)
+    # fix the age to be within 34-94
+    age = np.clip(clean_age(age), 34, 94)
     diab_dur = int(round(clean_diab_dur(diab_dur)))
     bmi = clean_bmi(bmi)
     sbp = clean_bp(sbp)
